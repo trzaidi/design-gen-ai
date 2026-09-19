@@ -1,31 +1,29 @@
-import type { CSSProperties } from "react";
-
 const greetings = [
-  ["Persian", "سلام دنیا", "fa", "rtl"],
-  ["German", "Hallo Welt", "de", "ltr"],
-  ["Russian", "Привет, мир", "ru", "ltr"],
-  ["Hindi", "नमस्ते दुनिया", "hi", "ltr"],
-  ["Mandarin", "你好，世界", "zh", "ltr"],
-  ["Korean", "안녕하세요, 세계", "ko", "ltr"],
-  ["Japanese", "こんにちは、世界", "ja", "ltr"],
-  ["Arabic", "مرحباً بالعالم", "ar", "rtl"],
-  ["French", "Bonjour le monde", "fr", "ltr"],
-  ["Spanish", "Hola mundo", "es", "ltr"],
-  ["Greek", "Γεια σου κόσμε", "el", "ltr"],
-  ["Italian", "Ciao mondo", "it", "ltr"],
-  ["Portuguese", "Olá mundo", "pt", "ltr"],
-  ["Turkish", "Merhaba dünya", "tr", "ltr"],
-  ["Hebrew", "שלום עולם", "he", "rtl"],
-  ["Urdu", "ہیلو دنیا", "ur", "rtl"],
-  ["Swahili", "Salamu, dunia", "sw", "ltr"],
-  ["Dutch", "Hallo wereld", "nl", "ltr"],
-  ["Polish", "Witaj świecie", "pl", "ltr"],
-  ["Ukrainian", "Привіт, світе", "uk", "ltr"],
-  ["Bengali", "হ্যালো বিশ্ব", "bn", "ltr"],
-  ["Vietnamese", "Xin chào thế giới", "vi", "ltr"],
-  ["Indonesian", "Halo dunia", "id", "ltr"],
-  ["Thai", "สวัสดีชาวโลก", "th", "ltr"],
-] as const;
+  { text: "سلام دنیا", lang: "fa", direction: "rtl" },
+  { text: "HALLO WELT", lang: "de", direction: "ltr" },
+  { text: "ПРИВЕТ, МИР", lang: "ru", direction: "ltr" },
+  { text: "नमस्ते दुनिया", lang: "hi", direction: "ltr" },
+  { text: "你好，世界", lang: "zh", direction: "ltr" },
+  { text: "안녕하세요, 세계", lang: "ko", direction: "ltr" },
+  { text: "こんにちは、世界", lang: "ja", direction: "ltr" },
+  { text: "مرحباً بالعالم", lang: "ar", direction: "rtl" },
+  { text: "BONJOUR LE MONDE", lang: "fr", direction: "ltr" },
+  { text: "HOLA MUNDO", lang: "es", direction: "ltr" },
+  { text: "ΓΕΙΑ ΣΟΥ ΚΟΣΜΕ", lang: "el", direction: "ltr" },
+  { text: "CIAO MONDO", lang: "it", direction: "ltr" },
+  { text: "OLÁ MUNDO", lang: "pt", direction: "ltr" },
+  { text: "MERHABA DÜNYA", lang: "tr", direction: "ltr" },
+  { text: "שלום עולם", lang: "he", direction: "rtl" },
+  { text: "ہیلو دنیا", lang: "ur", direction: "rtl" },
+  { text: "SALAMU, DUNIA", lang: "sw", direction: "ltr" },
+  { text: "HALLO WERELD", lang: "nl", direction: "ltr" },
+  { text: "WITAJ ŚWIECIE", lang: "pl", direction: "ltr" },
+  { text: "ПРИВІТ, СВІТЕ", lang: "uk", direction: "ltr" },
+  { text: "হ্যালো বিশ্ব", lang: "bn", direction: "ltr" },
+  { text: "XIN CHÀO THẾ GIỚI", lang: "vi", direction: "ltr" },
+  { text: "HALO DUNIA", lang: "id", direction: "ltr" },
+  { text: "สวัสดีชาวโลก", lang: "th", direction: "ltr" },
+];
 
 export default function Home() {
   return (
@@ -46,30 +44,22 @@ export default function Home() {
           </span>
         </h1>
 
-        <div
-          className="language-wheel"
-          aria-label="Hello World in different languages"
-        >
+        <div className="language-wheel">
           <div className="language-track">
-            {greetings.map(
-              ([language, greeting, code, direction], index) => (
-                <p
-                  className="language"
-                  style={
-                    {
-                      "--position": index,
-                    } as CSSProperties
-                  }
-                  key={language}
+            {greetings.map((greeting, index) => (
+              <p
+                className="language"
+                style={{ animationDelay: `${index * 3}s` }}
+                key={greeting.lang}
+              >
+                <bdi
+                  lang={greeting.lang}
+                  dir={greeting.direction === "rtl" ? "rtl" : "ltr"}
                 >
-                  <span>{language}</span>
-
-                  <bdi lang={code} dir={direction}>
-                    {greeting}
-                  </bdi>
-                </p>
-              ),
-            )}
+                  {greeting.text}
+                </bdi>
+              </p>
+            ))}
           </div>
         </div>
 
@@ -81,8 +71,8 @@ export default function Home() {
       </main>
 
       <footer>
-        <span>Designed and built by Tai Zaidi</span>
-        <span>New York · 2026</span>
+        <span>Tai Zaidi</span>
+        <span>Columbia University · 2026</span>
       </footer>
     </div>
   );
