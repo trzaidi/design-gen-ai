@@ -1,73 +1,105 @@
-const greetings = [
-  { text: "سلام دنیا", lang: "fa", direction: "rtl" },
-  { text: "HALLO WELT", lang: "de", direction: "ltr" },
-  { text: "ПРИВЕТ, МИР", lang: "ru", direction: "ltr" },
-  { text: "नमस्ते दुनिया", lang: "hi", direction: "ltr" },
-  { text: "你好，世界", lang: "zh", direction: "ltr" },
-  { text: "안녕하세요, 세계", lang: "ko", direction: "ltr" },
-  { text: "こんにちは、世界", lang: "ja", direction: "ltr" },
-  { text: "مرحباً بالعالم", lang: "ar", direction: "rtl" },
-  { text: "BONJOUR LE MONDE", lang: "fr", direction: "ltr" },
-  { text: "HOLA MUNDO", lang: "es", direction: "ltr" },
-  { text: "ΓΕΙΑ ΣΟΥ ΚΟΣΜΕ", lang: "el", direction: "ltr" },
-  { text: "CIAO MONDO", lang: "it", direction: "ltr" },
-  { text: "OLÁ MUNDO", lang: "pt", direction: "ltr" },
-  { text: "MERHABA DÜNYA", lang: "tr", direction: "ltr" },
-  { text: "שלום עולם", lang: "he", direction: "rtl" },
-  { text: "ہیلو دنیا", lang: "ur", direction: "rtl" },
-  { text: "SALAMU, DUNIA", lang: "sw", direction: "ltr" },
-  { text: "HALLO WERELD", lang: "nl", direction: "ltr" },
-  { text: "WITAJ ŚWIECIE", lang: "pl", direction: "ltr" },
-  { text: "ПРИВІТ, СВІТЕ", lang: "uk", direction: "ltr" },
-  { text: "হ্যালো বিশ্ব", lang: "bn", direction: "ltr" },
-  { text: "XIN CHÀO THẾ GIỚI", lang: "vi", direction: "ltr" },
-  { text: "HALO DUNIA", lang: "id", direction: "ltr" },
-  { text: "สวัสดีชาวโลก", lang: "th", direction: "ltr" },
-];
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+type Caption = {
+  id: number;
+  caption_text: string;
+  image_description: string;
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const { data, error } = await supabase
+    .from("captions")
+    .select("id, caption_text, image_description")
+    .order("id", { ascending: true });
+
+  const captions = (data ?? []) as Caption[];
+
   return (
     <div className="page">
       <header className="masthead">
-        <span className="course">Design for Generative AI</span>
+        <span
+          className="course glitch-small"
+          data-text="Design for Generative AI"
+        >
+          Design for Generative AI
+        </span>
         <span className="course-number">COMS 6901 / 6998</span>
       </header>
 
-      <main className="hero">
-        <p className="assignment">Assignment 01</p>
+      <main>
+        <section className="hero" aria-labelledby="page-title">
+          <p className="assignment">Assignment 02 · Supabase</p>
 
-        <h1>
-          <span>Hello</span>
+          <h1 id="page-title">
+            <span
+              className="glitch-title"
+              data-text="CAPTION"
+              aria-hidden="true"
+            >
+              CAPTION
+            </span>
 
-          <span className="world">
-            World<span className="period">.</span>
-          </span>
-        </h1>
+            <span
+              className="world glitch-title"
+              data-text="ARCHIVE."
+              aria-hidden="true"
+            >
+              ARCHIVE<span className="period">.</span>
+            </span>
 
-        <div className="language-wheel">
-          <div className="language-track">
-            {greetings.map((greeting, index) => (
-              <p
-                className="language"
-                style={{ animationDelay: `${index * 3}s` }}
-                key={greeting.lang}
-              >
-                <bdi
-                  lang={greeting.lang}
-                  dir={greeting.direction === "rtl" ? "rtl" : "ltr"}
-                >
-                  {greeting.text}
-                </bdi>
-              </p>
-            ))}
+            <span className="sr-only">Caption Archive</span>
+          </h1>
+
+          <p className="intro">
+            Six questionable decisions, retrieved live from Supabase.
+          </p>
+
+          <a className="jump-link" href="#captions">
+            View captions
+          </a>
+        </section>
+
+        <section
+          className="caption-section"
+          id="captions"
+          aria-labelledby="caption-heading"
+        >
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Live database feed</p>
+              <h2 id="caption-heading">Current entries</h2>
+            </div>
+
+            <span className="record-count">
+              {captions.length.toString().padStart(2, "0")} records
+            </span>
           </div>
-        </div>
 
-        <div className="color-key" aria-hidden="true">
-          <span className="green" />
-          <span className="cyan" />
-          <span className="purple" />
-        </div>
+          {error ? (
+            <p className="database-message" role="alert">
+              The caption archive could not be loaded.
+            </p>
+          ) : (
+            <div className="caption-grid">
+              {captions.map((caption, index) => (
+                <article className="caption-card" key={caption.id}>
+                  <div className="card-topline">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <span>CAP-{String(caption.id).padStart(4, "0")}</span>
+                  </div>
+
+                  <p className="caption-text">{caption.caption_text}</p>
+
+                  <p className="image-description">
+                    {caption.image_description}
+                  </p>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
       </main>
 
       <footer>
