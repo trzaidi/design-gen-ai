@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Caption Archive | Design AI",
-  description: "A live caption archive powered by Next.js and Supabase.",
+  description: "An authenticated caption archive powered by Next.js and Supabase.",
 };
 
 export default function RootLayout({

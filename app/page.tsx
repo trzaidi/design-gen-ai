@@ -1,83 +1,68 @@
-import { supabase } from "@/lib/supabase";
-
-type Caption = {
-  id: number;
-  caption_text: string;
-  image_description: string;
-};
+import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
+import { createClient } from "@/lib/supabase/server";
+import type { Caption } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { data, error } = await supabase
-    .from("captions")
-    .select("id, caption_text, image_description")
-    .order("id", { ascending: true });
+  const supabase = await createClient();
+  const [captionResult, claimsResult] = await Promise.all([
+    supabase
+      .from("captions")
+      .select("id, caption_text, image_description")
+      .order("id", { ascending: true }),
+    supabase.auth.getClaims(),
+  ]);
 
-  const captions = (data ?? []) as Caption[];
+  const captions = (captionResult.data ?? []) as Caption[];
+  const claims = claimsResult.data?.claims;
+  const signedIn = Boolean(claims?.sub);
+  const email = typeof claims?.email === "string" ? claims.email : undefined;
 
   return (
     <div className="page">
-      <header className="masthead">
-        <span
-          className="course glitch-small"
-          data-text="Design for Generative AI"
-        >
-          Design for Generative AI
-        </span>
-        <span className="course-number">COMS 6901 / 6998</span>
-      </header>
+      <SiteHeader signedIn={signedIn} email={email} />
 
       <main>
         <section className="hero" aria-labelledby="page-title">
-          <p className="assignment">Assignment 02 · Supabase</p>
+          <p className="assignment">Assignment 03 · Auth</p>
 
           <h1 id="page-title">
-            <span
-              className="glitch-title"
-              data-text="CAPTION"
-              aria-hidden="true"
-            >
+            <span className="glitch-title" data-text="CAPTION" aria-hidden="true">
               CAPTION
             </span>
-
-            <span
-              className="world glitch-title"
-              data-text="ARCHIVE."
-              aria-hidden="true"
-            >
+            <span className="world glitch-title" data-text="ARCHIVE." aria-hidden="true">
               ARCHIVE<span className="period">.</span>
             </span>
-
             <span className="sr-only">Caption Archive</span>
           </h1>
 
           <p className="intro">
-            Six questionable decisions, retrieved live from Supabase.
+            Six questionable decisions, retrieved live from Supabase. Sign in to enter the gated
+            Caption Arena and build your profile.
           </p>
 
-          <a className="jump-link" href="#captions">
-            View captions
-          </a>
+          <div className="hero-actions">
+            <a className="jump-link" href="#captions">View captions</a>
+            <Link className="outline-link" href={signedIn ? "/vote" : "/login"}>
+              {signedIn ? "Enter Caption Arena" : "Sign in with Google"}
+            </Link>
+          </div>
         </section>
 
-        <section
-          className="caption-section"
-          id="captions"
-          aria-labelledby="caption-heading"
-        >
+        <section className="caption-section" id="captions" aria-labelledby="caption-heading">
           <div className="section-heading">
             <div>
               <p className="eyebrow">Live database feed</p>
               <h2 id="caption-heading">Current entries</h2>
             </div>
-
             <span className="record-count">
               {captions.length.toString().padStart(2, "0")} records
             </span>
           </div>
 
-          {error ? (
+          {captionResult.error ? (
             <p className="database-message" role="alert">
               The caption archive could not be loaded.
             </p>
@@ -89,12 +74,8 @@ export default async function Home() {
                     <span>{String(index + 1).padStart(2, "0")}</span>
                     <span>CAP-{String(caption.id).padStart(4, "0")}</span>
                   </div>
-
                   <p className="caption-text">{caption.caption_text}</p>
-
-                  <p className="image-description">
-                    {caption.image_description}
-                  </p>
+                  <p className="image-description">{caption.image_description}</p>
                 </article>
               ))}
             </div>
