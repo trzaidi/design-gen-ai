@@ -1,92 +1,53 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { CaptionCard } from "@/components/caption-card";
 import { createClient } from "@/lib/supabase/server";
-import type { Caption } from "@/lib/types";
+import { CAPTION_FIELDS, dailyScene } from "@/lib/arena";
+import type { Caption, CaptionStats } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const supabase = await createClient();
-  const [captionResult, claimsResult] = await Promise.all([
-    supabase
-      .from("captions")
-      .select("id, caption_text, image_description")
-      .order("id", { ascending: true }),
+  const [entries, totals, claimsResult] = await Promise.all([
+    supabase.from("captions").select(CAPTION_FIELDS).order("created_at", { ascending: false }).order("id", { ascending: false }).limit(100),
+    supabase.from("caption_stats").select("caption_id, upvotes, downvotes, score"),
     supabase.auth.getClaims(),
   ]);
-
-  const captions = (captionResult.data ?? []) as Caption[];
+  const captions = (entries.data ?? []) as unknown as Caption[];
+  const stats = new Map((totals.data ?? []).map((row) => [row.caption_id, row as CaptionStats]));
   const claims = claimsResult.data?.claims;
-  const signedIn = Boolean(claims?.sub);
+  const signedIn = Boolean(claims?.sub) && !claims?.is_anonymous;
   const email = typeof claims?.email === "string" ? claims.email : undefined;
-
-  return (
-    <div className="page">
-      <SiteHeader signedIn={signedIn} email={email} />
-
-      <main>
-        <section className="hero" aria-labelledby="page-title">
-          <p className="assignment">Assignment 03 · Auth</p>
-
-          <h1 id="page-title">
-            <span className="glitch-title" data-text="CAPTION" aria-hidden="true">
-              CAPTION
-            </span>
-            <span className="world glitch-title" data-text="ARCHIVE." aria-hidden="true">
-              ARCHIVE<span className="period">.</span>
-            </span>
-            <span className="sr-only">Caption Archive</span>
-          </h1>
-
-          <p className="intro">
-            Six questionable decisions, retrieved live from Supabase. Sign in to enter the gated
-            Caption Arena and build your profile.
-          </p>
-
-          <div className="hero-actions">
-            <a className="jump-link" href="#captions">View captions</a>
-            <Link className="outline-link" href={signedIn ? "/vote" : "/login"}>
-              {signedIn ? "Enter Caption Arena" : "Sign in with Google"}
-            </Link>
-          </div>
-        </section>
-
-        <section className="caption-section" id="captions" aria-labelledby="caption-heading">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Live database feed</p>
-              <h2 id="caption-heading">Current entries</h2>
-            </div>
-            <span className="record-count">
-              {captions.length.toString().padStart(2, "0")} records
-            </span>
-          </div>
-
-          {captionResult.error ? (
-            <p className="database-message" role="alert">
-              The caption archive could not be loaded.
-            </p>
-          ) : (
-            <div className="caption-grid">
-              {captions.map((caption, index) => (
-                <article className="caption-card" key={caption.id}>
-                  <div className="card-topline">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <span>CAP-{String(caption.id).padStart(4, "0")}</span>
-                  </div>
-                  <p className="caption-text">{caption.caption_text}</p>
-                  <p className="image-description">{caption.image_description}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
-
-      <footer>
-        <span>Tai Zaidi</span>
-        <span>Columbia University · 2026</span>
-      </footer>
-    </div>
-  );
+  const { scene } = dailyScene();
+  return <div className="page">
+    <SiteHeader signedIn={signedIn} email={email} />
+    <main>
+      <section className="hero" aria-labelledby="page-title">
+        <p className="assignment">Campus life. City chaos. AI captions.</p>
+        <h1 id="page-title">
+          <span className="glitch-title" data-text="CAPTION" aria-hidden="true">CAPTION</span>
+          <span className="world glitch-title" data-text="ARCHIVE." aria-hidden="true">ARCHIVE<span className="period">.</span></span>
+          <span className="sr-only">Caption Archive</span>
+        </h1>
+        <p className="intro">AI writes the punchline. You decide if it lands. Make a caption for your next questionable New York moment, then let the arena judge.</p>
+        <div className="hero-actions">
+          <Link className="jump-link" href={signedIn ? "/create" : "/login"}>Create a caption</Link>
+          <a className="outline-link" href="#captions">Explore the archive</a>
+        </div>
+      </section>
+      <section className="daily-scene" aria-labelledby="daily-heading">
+        <div><p className="eyebrow">A new scene every day</p><h2 id="daily-heading">Today’s material</h2></div>
+        <p>{scene}</p>
+        <Link className="primary-button" href={signedIn ? "/create" : "/login"}>Caption this →</Link>
+      </section>
+      <section className="caption-section" id="captions" aria-labelledby="caption-heading">
+        <div className="section-heading"><div><p className="eyebrow">Fresh from the community</p><h2 id="caption-heading">Current entries</h2></div><Link className="record-count" href="/vote?sort=top">Find the funniest →</Link></div>
+        {entries.error || totals.error ? <p className="database-message" role="alert">The caption archive could not be loaded.</p> : captions.length ? (
+          <div className="arena-grid">{captions.map((caption) => <CaptionCard key={caption.id} caption={caption} stats={stats.get(caption.id)} arenaLink={signedIn} />)}</div>
+        ) : <p className="database-message">The arena is waiting for its first caption. <Link href={signedIn ? "/create" : "/login"}>Make one.</Link></p>}
+      </section>
+    </main>
+    <footer><span>Tai Zaidi</span><span>Columbia University · 2026</span></footer>
+  </div>;
 }

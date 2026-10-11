@@ -18,6 +18,7 @@ export function SiteHeader({ signedIn, email }: SiteHeaderProps) {
         {signedIn ? (
           <>
             <Link href="/vote">Vote</Link>
+            <Link href="/create">Create</Link>
             <Link href="/profile">Profile</Link>
             <form action={signOut}>
               <button className="nav-button" type="submit">Sign out</button>
