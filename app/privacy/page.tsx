@@ -21,6 +21,19 @@ export default function PrivacyPage() {
             information or use it for advertising.
           </p>
           <p className="panel-copy">
+            When you generate a caption, your scene and generation prompt are
+            sent to the AI provider through Vercel AI Gateway. The scene,
+            generated caption, prompt, tone, and model are saved in Supabase and
+            published in the public archive. Do not include private information
+            in a submission.
+          </p>
+          <p className="panel-copy">
+            Votes and generation requests are associated with your account.
+            Other users can see aggregate vote totals, but cannot read your
+            individual votes or generation-request history. Profiles can be
+            edited only by their owners. Uploaded avatar images have public URLs.
+          </p>
+          <p className="panel-copy">
             You may sign out at any time. This student project does not request
             access to Google Drive, Gmail, contacts, or other Google account data.
           </p>
