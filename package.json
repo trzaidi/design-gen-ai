@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:auth": "node --experimental-strip-types --test tests/ai-auth.test.mjs"
+    "test:auth": "node --experimental-strip-types --test tests/ai-auth.test.mjs tests/ai-provider.test.mjs"
   },
   "dependencies": {
+    "@ai-sdk/google": "4.0.93",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.2",
     "@vercel/oidc": "4.0.0",

@@ -28,7 +28,7 @@ Set these in `.env.local` for local development and in the existing Vercel proje
 
 Vercel deployments can use their automatic request-context OIDC token instead of a Gateway API key. The token need not exist in `process.env`; `@vercel/oidc` reads the request context first. Enable AI Gateway for the existing `taiz` team and ensure it has a usable allowance. OIDC authenticates requests; it does not grant credits. Never commit secrets or expose an AI key through a `NEXT_PUBLIC_` variable.
 
-The verified default model is `google/gemini-3.5-flash-lite`. Each account gets five generation attempts in a rolling 24-hour window, enforced in Postgres with serialized reservations. Failed provider requests also consume an attempt. Captions are capped at 200 output tokens, calls time out after 25 seconds, and automatic retries are disabled. Generated captions, input scenes, exact prompts, tone, and model are persisted. The generator explains that submissions become public.
+The verified default model is `google/gemini-3.5-flash-lite`. Each account gets five generation attempts in a rolling 24-hour window, enforced in Postgres with serialized reservations. Failed provider requests also consume an attempt. Captions are capped at 512 output tokens, calls time out after 25 seconds, and automatic retries are disabled. Generated captions, input scenes, exact prompts, tone, and model are persisted. The generator explains that submissions become public.
 
 ## Database
 
@@ -69,3 +69,11 @@ The caption generator can choose an existing gallery photo. Its verified descrip
 `GET /api/health/ai` returns only whether a Gateway API key or existing Vercel request-context OIDC token is available. It returns no credential values or user data and does not call the model. Authentication availability does not verify provider credits or model access.
 
 `npm run test:auth` covers the regression where a deployed request has an OIDC header but no environment token. Authenticated mutations still require verified Supabase identity and a complete profile. Missing AI authentication returns before reserving a generation attempt. Provider failures log only HTTP status, with safe user-facing messages.
+
+## Direct Gemini free-tier connection
+
+Create a Gemini API key in Google AI Studio for a free-tier project. In the existing Vercel project, save the key as a Production/Preview Secret named `GEMINI_API_KEY`, then redeploy. Never paste the key into chat or commit it. `GEMINI_MODEL` can optionally override the verified default `gemini-3.5-flash-lite`.
+
+When the Gemini key is present, the app sends the caption prompt directly to Google's Gemini API using `@ai-sdk/google`; it does not use the Gateway allowance for that request. The Gateway connection remains available when Gemini is not configured. Provider errors do not cause automatic switching to a paid provider. Google's free-tier limits and availability apply, and free-tier content may be used to improve Google products as disclosed on the privacy page.
+
+`/api/health/ai` checks the selected connection through a read-only metadata call. It returns only readiness status, never secret values, account balances, or user data. A metadata check cannot confirm generation quota availability. The exact prompt and selected model are still saved with every successful caption.

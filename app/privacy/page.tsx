@@ -22,7 +22,9 @@ export default function PrivacyPage() {
           </p>
           <p className="panel-copy">
             When you generate a caption, your scene and generation prompt are
-            sent to the AI provider through Vercel AI Gateway. The scene,
+            sent to Google Gemini when a Gemini connection is configured,
+            or to the AI provider through Vercel AI Gateway. Google’s free-tier
+            API may use submitted content to improve its products. The scene,
             generated caption, prompt, tone, and model are saved in Supabase and
             published in the public archive. Do not include private information
             in a submission.

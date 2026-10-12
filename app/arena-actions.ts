@@ -7,6 +7,7 @@ import { buildPrompt, TONES, type Tone } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
 import { findMemeImage } from "@/lib/meme-images";
 import { hasAiAuthentication } from "@/lib/ai-auth";
+import { captionModel } from "@/lib/ai-provider";
 
 async function arenaUser() {
   const supabase = await createClient();
@@ -48,7 +49,8 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   const tone = String(formData.get("tone") ?? "");
   if (scene.length < 10 || scene.length > 600 || !TONES.includes(tone as Tone)) return { error: "Describe a scene in 10–600 characters and choose a tone." };
   if (!hasAiAuthentication()) return { error: "AI generation is not connected yet. Please contact the site owner." };
-  const model = process.env.AI_GATEWAY_MODEL ?? "google/gemini-3.5-flash-lite";
+  const configuredModel = captionModel();
+  const model = configuredModel.storedModel;
   const prompt = buildPrompt(scene, tone as Tone);
   const { supabase } = member;
   // The DB serializes reservations per user and enforces five attempts per 24 hours.
@@ -59,7 +61,7 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
     : "Generation could not be started. Please try again." };
   let caption: string;
   try {
-    const result = await generateText({ model, prompt, maxOutputTokens: 200, maxRetries: 0, timeout: 25_000 });
+    const result = await generateText({ model: configuredModel.model, prompt, reasoning: "low", maxOutputTokens: 512, maxRetries: 0, timeout: 25_000 });
     caption = result.text.trim().replace(/^["“]|["”]$/g, "");
     if (!caption || caption.length > 500 || result.finishReason === "length") return { error: "The AI did not return a usable caption. Try a different scene." };
   } catch (error) {
