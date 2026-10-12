@@ -924,7 +924,8 @@ footer {
 .tone-options label:has(input:checked) { border-color: var(--green); color: var(--green); }
 .tone-options input { width: 1rem; min-height: 1rem; accent-color: var(--green); margin: 0; }
 .generation-notice { margin: 0; color: var(--muted); font-family: var(--detail-font); font-size: .8rem; line-height: 1.6; }
-button:disabled { cursor: wait; opacity: .55; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+button[aria-busy="true"] { cursor: wait; }
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 @media (max-width: 48rem) { .daily-scene { grid-template-columns: 1fr; padding: 1.5rem; } .compact-heading { align-items: flex-start; gap: .75rem; } }
 

@@ -53,11 +53,13 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   const model = configuredModel.storedModel;
   const prompt = buildPrompt(scene, tone as Tone);
   const { supabase } = member;
-  // The DB serializes reservations per user and enforces five attempts per 24 hours.
+  // The DB serializes reservations and enforces each account's trusted allowance.
   const { data: request, error: reservationError } = await supabase.from("generation_requests")
     .insert({ prompt, model }).select("id").single();
+  // Refresh the remaining allowance even if the provider fails or another tab used it.
+  revalidatePath("/create");
   if (reservationError || !request) return { error: reservationError?.message.includes("generation_limit")
-    ? "You have used your five generation attempts for the last 24 hours. Come back later to create more."
+    ? "You have used your 10 generation attempts for the last 24 hours. You can generate again as those attempts expire."
     : "Generation could not be started. Please try again." };
   let caption: string;
   try {

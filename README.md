@@ -28,7 +28,7 @@ Set these in `.env.local` for local development and in the existing Vercel proje
 
 Vercel deployments can use their automatic request-context OIDC token instead of a Gateway API key. The token need not exist in `process.env`; `@vercel/oidc` reads the request context first. Enable AI Gateway for the existing `taiz` team and ensure it has a usable allowance. OIDC authenticates requests; it does not grant credits. Never commit secrets or expose an AI key through a `NEXT_PUBLIC_` variable.
 
-The verified default model is `google/gemini-3.5-flash-lite`. Each account gets five generation attempts in a rolling 24-hour window, enforced in Postgres with serialized reservations. Failed provider requests also consume an attempt. Captions are capped at 512 output tokens, calls time out after 25 seconds, and automatic retries are disabled. Generated captions, input scenes, exact prompts, tone, and model are persisted. The generator explains that submissions become public.
+The verified default model is `google/gemini-3.5-flash-lite`. Members get 10 generation attempts in a rolling 24-hour window, enforced in Postgres with serialized reservations. A private administrator-managed allowance grants the owner unlimited generations; clients can only read their own effective limit and cannot change it. Failed provider requests also consume an attempt. Captions are capped at 512 output tokens, calls time out after 25 seconds, and automatic retries are disabled. Generated captions, input scenes, exact prompts, tone, and model are persisted. The generator explains that submissions become public.
 
 ## Database
 
