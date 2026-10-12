@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buildPrompt, TONES, type Tone } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
 import { findMemeImage } from "@/lib/meme-images";
+import { hasAiAuthentication } from "@/lib/ai-auth";
 
 async function arenaUser() {
   const supabase = await createClient();
@@ -46,7 +47,7 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   const scene = picture?.description ?? String(formData.get("scene") ?? "").trim();
   const tone = String(formData.get("tone") ?? "");
   if (scene.length < 10 || scene.length > 600 || !TONES.includes(tone as Tone)) return { error: "Describe a scene in 10–600 characters and choose a tone." };
-  if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) return { error: "AI generation is not configured yet. The site owner needs to enable AI Gateway for this deployment." };
+  if (!hasAiAuthentication()) return { error: "AI generation is not connected yet. Please contact the site owner." };
   const model = process.env.AI_GATEWAY_MODEL ?? "google/gemini-3.5-flash-lite";
   const prompt = buildPrompt(scene, tone as Tone);
   const { supabase } = member;
@@ -61,8 +62,14 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
     const result = await generateText({ model, prompt, maxOutputTokens: 200, maxRetries: 0, timeout: 25_000 });
     caption = result.text.trim().replace(/^["“]|["”]$/g, "");
     if (!caption || caption.length > 500 || result.finishReason === "length") return { error: "The AI did not return a usable caption. Try a different scene." };
-  } catch {
+  } catch (error) {
     // Provider errors can contain request details; never return them to the client.
+    const status = typeof error === "object" && error !== null && "statusCode" in error && typeof error.statusCode === "number"
+      ? error.statusCode : null;
+    console.error("Caption generation failed", { status });
+    if (status === 401) return { error: "The AI connection could not authenticate. Please contact the site owner. This attempt counts toward your daily limit." };
+    if (status === 402 || status === 403) return { error: "AI generation is not available for this site yet. The site owner needs to check the provider access and allowance. This attempt counts toward your daily limit." };
+    if (status === 429) return { error: "The AI provider is busy. Please try again later. This attempt counts toward your daily limit." };
     return { error: "The AI provider is unavailable or its allowance is exhausted. Try again later. This attempt counts toward your daily limit." };
   }
   const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture?.path ?? null, prompt, model, tone, generation_id: request.id }).select("id").single();

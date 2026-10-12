@@ -26,7 +26,7 @@ Set these in `.env.local` for local development and in the existing Vercel proje
 - `AI_GATEWAY_API_KEY` for local development (server-only)
 - `AI_GATEWAY_MODEL` optionally overrides the default text model
 
-Vercel deployments can use their automatic `VERCEL_OIDC_TOKEN` instead of a Gateway API key. Enable AI Gateway for the existing `taiz` team and ensure it has a usable allowance. OIDC authenticates requests; it does not grant credits. Never commit secrets or expose an AI key through a `NEXT_PUBLIC_` variable.
+Vercel deployments can use their automatic request-context OIDC token instead of a Gateway API key. The token need not exist in `process.env`; `@vercel/oidc` reads the request context first. Enable AI Gateway for the existing `taiz` team and ensure it has a usable allowance. OIDC authenticates requests; it does not grant credits. Never commit secrets or expose an AI key through a `NEXT_PUBLIC_` variable.
 
 The verified default model is `google/gemini-3.5-flash-lite`. Each account gets five generation attempts in a rolling 24-hour window, enforced in Postgres with serialized reservations. Failed provider requests also consume an attempt. Captions are capped at 200 output tokens, calls time out after 25 seconds, and automatic retries are disabled. Generated captions, input scenes, exact prompts, tone, and model are persisted. The generator explains that submissions become public.
 
@@ -63,3 +63,9 @@ The existing repository is linked to Vercel. A push to its production branch tri
 All six original archive captions have associated pictures in `public/memes`. The bowling picture comes from the user; the other five are generated illustrations presented as photographs and labeled AI-generated on the cards. Images preserve their full frames on desktop and mobile. Their paths and generation prompts are saved in Supabase, with provenance and exact prompts also recorded in `docs/meme-image-prompts.json`.
 
 The caption generator can choose an existing gallery photo. Its verified description is used in the AI prompt, and the photo path is saved with the new caption. Users can also keep the original text-only scene workflow.
+
+## AI authentication diagnosis
+
+`GET /api/health/ai` returns only whether a Gateway API key or existing Vercel request-context OIDC token is available. It returns no credential values or user data and does not call the model. Authentication availability does not verify provider credits or model access.
+
+`npm run test:auth` covers the regression where a deployed request has an OIDC header but no environment token. Authenticated mutations still require verified Supabase identity and a complete profile. Missing AI authentication returns before reserving a generation attempt. Provider failures log only HTTP status, with safe user-facing messages.
