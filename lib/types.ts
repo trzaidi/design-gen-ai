@@ -14,6 +14,7 @@ export type Caption = {
   prompt: string | null;
   model: string | null;
   tone: string | null;
+  image_path: string | null;
 };
 
 export type CaptionStats = { caption_id: number; upvotes: number; downvotes: number; score: number };

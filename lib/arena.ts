@@ -1,4 +1,4 @@
-export const CAPTION_FIELDS = "id, caption_text, image_description, created_at, prompt, model, tone";
+export const CAPTION_FIELDS = "id, caption_text, image_description, created_at, prompt, model, tone, image_path";
 export const TONES = ["Deadpan", "Unhinged", "Wholesome"] as const;
 export type Tone = (typeof TONES)[number];
 

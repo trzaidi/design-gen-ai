@@ -1,0 +1,38 @@
+[
+  {
+    "caption": "BECOME UNGOVERNABLE.",
+    "asset": "public/memes/become-ungovernable.webp",
+    "source": "user-provided image",
+    "prompt": null
+  },
+  {
+    "caption": "THE HOA DEADLINE REMAINS IN EFFECT.",
+    "asset": "public/memes/hoa-tornado.webp",
+    "source": "built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Asset type: photo for a meme caption card, landscape 3:2. Primary request: a candid absurd photograph of a middle-aged man calmly pushing a lawn mower across his neatly cut suburban lawn while a huge tornado approaches in the distant background. The joke is that lawn maintenance continues despite the tornado. Show the full mower and man in the foreground and clearly visible large tornado funnel in the background, ordinary overcast storm lighting, realistic documentary snapshot texture. No text, no caption, no watermarks, no collage. This is a fictional meme image."
+  },
+  {
+    "caption": "SHOES STAY ON.",
+    "asset": "public/memes/airport-armor.webp",
+    "source": "built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Asset type: photo for a meme caption card, landscape 3:2. Primary request: an ordinary modern airport security queue, with a person wearing a complete gleaming medieval suit of plate armor, including closed helmet and clearly visible armored boots, patiently waiting among normal travelers carrying luggage. Full-body armored person prominent, airport security conveyor and checkpoint visibly establish context. Candid deadpan realistic snapshot, fluorescent lighting. No text, no caption, no watermarks, no collage. Fictional absurd meme scene."
+  },
+  {
+    "caption": "GENERATIONAL WEALTH STARTS WITH ME.",
+    "asset": "public/memes/raccoon-credit.webp",
+    "source": "built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Asset type: photo for a meme caption card, landscape 3:2. Primary request: a mischievous realistic raccoon at a supermarket self-checkout, holding a blank credit card in its small front paws right next to the card payment terminal, as if confidently attempting to pay. The raccoon's face, black mask markings, striped tail, paws, credit card, and checkout are clear. Candid funny believable photograph, normal grocery store lighting. No humans required, no text, no card number or logos, no caption, no watermark, no collage. Fictional absurd meme scene."
+  },
+  {
+    "caption": "THEY SAID THE DOCTOR WOULD BE RIGHT WITH ME.",
+    "asset": "public/memes/waiting-skeleton.webp",
+    "source": "built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Asset type: photo for a meme caption card, landscape 3:2. Primary request: a realistic anatomical skeleton sitting upright on an ordinary chair in a quiet modern doctor's office waiting room, patiently holding a medical clipboard on its lap. Full skeleton head torso legs visible, waiting room chair row and reception window establish medical setting. Dry deadpan visual joke about waiting forever, mundane fluorescent lighting, candid realistic photography, non-gory. No text, no caption, no watermarks, no collage. Fictional meme scene."
+  },
+  {
+    "caption": "INTERNAL AFFAIRS.",
+    "asset": "public/memes/police-goose.webp",
+    "source": "built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Asset type: photo for a meme caption card, landscape 3:2. Primary request: a white goose with orange beak and feet standing triumphantly on the roof of a modern black-and-white police patrol car beside its light bar, looking self-important and in charge. A clearly recognizable police car side and roof are visible, goose large enough to see expression, street background. Candid realistic natural-light funny snapshot. No text apart from optional ordinary POLICE marking on car, no caption, no watermark, no collage. Fictional meme scene."
+  }
+]

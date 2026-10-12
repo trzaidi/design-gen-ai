@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { buildPrompt, TONES, type Tone } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
+import { findMemeImage } from "@/lib/meme-images";
 
 async function arenaUser() {
   const supabase = await createClient();
@@ -39,7 +40,10 @@ export async function rateCaption(captionId: number, value: number): Promise<Act
 export async function generateCaption(_previous: ActionResult, formData: FormData): Promise<ActionResult> {
   const member = await arenaUser();
   if (!member) return { error: "Sign in and complete your profile to generate captions." };
-  const scene = String(formData.get("scene") ?? "").trim();
+  const imagePath = String(formData.get("image_path") ?? "");
+  const picture = findMemeImage(imagePath);
+  if (imagePath && !picture) return { error: "Choose a picture from the gallery." };
+  const scene = picture?.description ?? String(formData.get("scene") ?? "").trim();
   const tone = String(formData.get("tone") ?? "");
   if (scene.length < 10 || scene.length > 600 || !TONES.includes(tone as Tone)) return { error: "Describe a scene in 10–600 characters and choose a tone." };
   if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) return { error: "AI generation is not configured yet. The site owner needs to enable AI Gateway for this deployment." };
@@ -61,7 +65,7 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
     // Provider errors can contain request details; never return them to the client.
     return { error: "The AI provider is unavailable or its allowance is exhausted. Try again later. This attempt counts toward your daily limit." };
   }
-  const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, prompt, model, tone, generation_id: request.id }).select("id").single();
+  const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture?.path ?? null, prompt, model, tone, generation_id: request.id }).select("id").single();
   if (error || !data) return { error: "The caption was generated but could not be saved. Please try again." };
   revalidatePath("/"); revalidatePath("/vote"); revalidatePath("/create");
   return { success: "Caption published to the arena.", captionId: data.id };

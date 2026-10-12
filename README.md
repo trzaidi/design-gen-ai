@@ -57,3 +57,9 @@ PM feedback accounts for half the assignment rubric. No actual PM feedback has b
 ## Deployment / submission
 
 The existing repository is linked to Vercel. A push to its production branch triggers deployment. After it becomes Ready, verify the public home page in Incognito, the login gate on `/vote` and `/create`, AI generation, saved prompts, voting, vote persistence after refresh, and vote isolation across two accounts. Deployment Protection must be off. Submit the unique deployment URL tied to the commit, not a moving production alias.
+
+## Meme images
+
+All six original archive captions have associated pictures in `public/memes`. The bowling picture comes from the user; the other five are generated illustrations presented as photographs and labeled AI-generated on the cards. Images preserve their full frames on desktop and mobile. Their paths and generation prompts are saved in Supabase, with provenance and exact prompts also recorded in `docs/meme-image-prompts.json`.
+
+The caption generator can choose an existing gallery photo. Its verified description is used in the AI prompt, and the photo path is saved with the new caption. Users can also keep the original text-only scene workflow.
