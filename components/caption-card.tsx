@@ -4,6 +4,7 @@ import type { Caption, CaptionStats } from "@/lib/types";
 import { ScoreLine, VoteControls } from "@/components/vote-controls";
 import { ShareButton } from "@/components/share-button";
 import { findMemeImage } from "@/lib/meme-images";
+import { PhotoCredit } from "@/components/photo-credit";
 
 export function CaptionCard({ caption, stats, vote, signedIn = false, rank, featured = false }: { caption: Caption; stats?: CaptionStats; vote?: number; signedIn?: boolean; rank?: number; featured?: boolean }) {
   const picture = findMemeImage(caption.image_path);
@@ -13,6 +14,7 @@ export function CaptionCard({ caption, stats, vote, signedIn = false, rank, feat
     {picture ? <figure className="meme-frame">
       <Image className="meme-picture" src={picture.path} alt={caption.image_description} width={picture.width} height={picture.height} sizes={featured ? "(max-width: 768px) 100vw, 900px" : "(max-width: 768px) 100vw, 33vw"} />
       {rank ? <span className="rank-badge">#{rank}</span> : null}
+      <PhotoCredit picture={picture} />
     </figure> : rank ? <span className="rank-badge rank-badge-inline">#{rank}</span> : null}
     <div className="card-body">
       <div className="card-topline">

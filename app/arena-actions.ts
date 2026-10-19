@@ -77,6 +77,8 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
     return { error: "The AI provider is unavailable or its allowance is exhausted. Try again later. This attempt counts toward your daily limit." };
   }
   const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture?.path ?? null, prompt, model, tone, generation_id: request.id }).select("id").single();
+  // 23514: the database has not been migrated to accept this picture yet.
+  if (error?.code === "23514") return { error: "This picture isn’t enabled in the archive yet. Pick a different picture or write your own scene." };
   if (error || !data) return { error: "The caption was generated but could not be saved. Please try again." };
   revalidatePath("/"); revalidatePath("/vote"); revalidatePath("/create");
   return { success: "Caption published to the arena.", captionId: data.id, caption, imagePath: picture?.path ?? null, tone };

@@ -6,6 +6,7 @@ import { generateCaption } from "@/app/arena-actions";
 import { TONES, TONE_DETAILS } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
 import { MEME_IMAGES, findMemeImage } from "@/lib/meme-images";
+import { PhotoCredit } from "@/components/photo-credit";
 
 export function GenerationForm({ scene, used, dailyLimit }: { scene: string; used: number; dailyLimit: number | null }) {
   const [state, action, pending] = useActionState<ActionResult, FormData>(generateCaption, {});
@@ -22,9 +23,15 @@ export function GenerationForm({ scene, used, dailyLimit }: { scene: string; use
   return <div className="create-layout">
     <form className="profile-form generation-form" action={action} ref={formRef}>
       <div className="section-heading compact-heading"><p className="eyebrow">Step 1 · Your scene</p><span className="record-count">{remaining === null ? "Unlimited generations" : `${remaining} of ${dailyLimit} left today`}</span></div>
-      <fieldset className="picture-fieldset"><legend>Choose a picture</legend><div className="picture-options">
+      <fieldset className="picture-fieldset"><legend>Choose a picture</legend>
+      <p className="picture-group-label">Around campus</p>
+      <div className="picture-options">
         <label className="picture-option text-option"><input type="radio" name="image_path" value="" checked={!imagePath} onChange={() => { setImagePath(""); setDescription(scene); }} /><span className="text-option-mark" aria-hidden="true">Aa</span><span>Write my own</span></label>
-        {MEME_IMAGES.map((image) => <label className="picture-option" key={image.path}><input type="radio" name="image_path" value={image.path} checked={imagePath === image.path} onChange={() => { setImagePath(image.path); setDescription(image.description); }} /><Image src={image.path} alt="" width={image.width} height={image.height} sizes="10rem" /><span>{image.title}</span></label>)}
+        {MEME_IMAGES.filter((image) => image.group === "Columbia").map((image) => <label className="picture-option" key={image.path}><input type="radio" name="image_path" value={image.path} checked={imagePath === image.path} onChange={() => { setImagePath(image.path); setDescription(image.description); }} /><Image src={image.path} alt="" width={image.width} height={image.height} sizes="10rem" /><span>{image.title}</span></label>)}
+      </div>
+      <p className="picture-group-label">Internet classics</p>
+      <div className="picture-options">
+        {MEME_IMAGES.filter((image) => image.group === "Classics").map((image) => <label className="picture-option" key={image.path}><input type="radio" name="image_path" value={image.path} checked={imagePath === image.path} onChange={() => { setImagePath(image.path); setDescription(image.description); }} /><Image src={image.path} alt="" width={image.width} height={image.height} sizes="10rem" /><span>{image.title}</span></label>)}
       </div></fieldset>
       <label htmlFor="scene">{picture ? "The scene" : "Describe the scene"}</label>
       <textarea id="scene" name="scene" value={description} readOnly={Boolean(picture)} onChange={(event) => setDescription(event.target.value)} required minLength={10} maxLength={600} rows={4} placeholder="e.g. A pigeon confidently boarding the 1 train at 116th St." />
@@ -45,7 +52,7 @@ export function GenerationForm({ scene, used, dailyLimit }: { scene: string; use
         {picture ? <Image src={picture.path} alt="" width={picture.width} height={picture.height} sizes="400px" /> : null}
         <p className="typing-line"><span className="typing-dots" aria-hidden="true"><span /><span /><span /></span> AI is workshopping a punchline…</p>
       </div> : result ? <div className="preview-card preview-done">
-        {resultPicture ? <Image src={resultPicture.path} alt="" width={resultPicture.width} height={resultPicture.height} sizes="400px" /> : null}
+        {resultPicture ? <figure className="judge-figure"><Image src={resultPicture.path} alt="" width={resultPicture.width} height={resultPicture.height} sizes="400px" /><PhotoCredit picture={resultPicture} /></figure> : null}
         <span className={`tone-chip tone-${result.tone?.toLowerCase()}`}>{result.tone}</span>
         <p className="caption-text">{result.caption}</p>
         <p className="form-message form-success">Published! The arena can vote on it now.</p>
@@ -54,7 +61,7 @@ export function GenerationForm({ scene, used, dailyLimit }: { scene: string; use
           <button className="outline-link" type="button" disabled={limitReached} onClick={() => formRef.current?.requestSubmit()}>↻ Try another take</button>
         </div>
       </div> : <div className="preview-card preview-empty">
-        {picture ? <Image src={picture.path} alt="" width={picture.width} height={picture.height} sizes="400px" /> : <span className="preview-placeholder" aria-hidden="true">✦</span>}
+        {picture ? <><Image src={picture.path} alt="" width={picture.width} height={picture.height} sizes="400px" /><PhotoCredit picture={picture} /></> : <span className="preview-placeholder" aria-hidden="true">✦</span>}
         <p>Your caption will appear here. Pick a picture and a tone, then hit generate.</p>
       </div>}
     </aside>

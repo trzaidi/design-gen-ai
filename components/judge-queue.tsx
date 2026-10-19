@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { rateCaption } from "@/app/arena-actions";
 import { findMemeImage } from "@/lib/meme-images";
+import { PhotoCredit } from "@/components/photo-credit";
 import type { Caption } from "@/lib/types";
 
 type Verdict = { caption: Caption; value: number };
@@ -82,7 +83,7 @@ export function JudgeQueue({ captions }: { captions: Caption[] }) {
       <span>{queue.length} left</span>
     </div>
     <article className={`judge-card ${flash ? `flash-${flash}` : ""}`} key={current.id} aria-live="polite">
-      {picture ? <Image className="judge-picture" src={picture.path} alt={current.image_description} width={picture.width} height={picture.height} sizes="(max-width: 768px) 100vw, 720px" priority /> : <div className="judge-scene"><span className="eyebrow">The scene</span><p>{current.image_description}</p></div>}
+      {picture ? <figure className="judge-figure"><Image className="judge-picture" src={picture.path} alt={current.image_description} width={picture.width} height={picture.height} sizes="(max-width: 768px) 100vw, 720px" priority /><PhotoCredit picture={picture} /></figure> : <div className="judge-scene"><span className="eyebrow">The scene</span><p>{current.image_description}</p></div>}
       <div className="judge-copy">
         {current.tone ? <span className={`tone-chip tone-${current.tone.toLowerCase()}`}>{current.tone}</span> : null}
         <p className="judge-caption">{current.caption_text}</p>
