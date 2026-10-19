@@ -1,9 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { redirect } from "next/navigation";
 import { updateProfile } from "@/app/actions";
+import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
+import { nameFromMetadata } from "@/lib/google-name";
 
 type ProfilePageProps = {
   searchParams: Promise<{ error?: string; saved?: string }>;
@@ -25,16 +28,25 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     redirect("/login");
   }
 
-  const { data } = await supabase
-    .from("profiles")
-    .select("id, first_name, last_name, avatar_path, updated_at")
-    .eq("id", claims.sub)
-    .maybeSingle();
+  const [{ data }, votes, generations] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, first_name, last_name, avatar_path, updated_at")
+      .eq("id", claims.sub)
+      .maybeSingle(),
+    supabase.from("votes").select("value"),
+    supabase.from("generation_requests").select("id", { count: "exact", head: true }),
+  ]);
+  const votesCast = votes.data?.length ?? 0;
+  const laughs = votes.data?.filter((row) => row.value === 1).length ?? 0;
+  const laughRate = votesCast ? Math.round((laughs / votesCast) * 100) : 0;
+  const judgeTitle = votesCast >= 50 ? "Chief Justice" : votesCast >= 20 ? "Senior Critic" : votesCast >= 5 ? "Regular Critic" : "New Critic";
 
   const profile = data as Profile | null;
   const email = typeof claims.email === "string" ? claims.email : "";
   const incomplete = !profile?.first_name || !profile?.last_name;
   const { error, saved } = await searchParams;
+  const googleName = nameFromMetadata(claims.user_metadata as Record<string, unknown> | undefined);
   const avatarUrl = profile?.avatar_path
     ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_path}?v=${encodeURIComponent(profile.updated_at)}`
     : null;
@@ -42,7 +54,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   return (
     <div className="page">
       <SiteHeader signedIn email={email} />
-      <main className="interior-page">
+      <main className="interior-page" id="main">
         <section className="profile-intro">
           <p className="eyebrow">Identity record</p>
           <h1 className="interior-title">
@@ -65,6 +77,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               </div>
             )}
             <p>{email}</p>
+            {!incomplete ? <span className="member-badge">{judgeTitle}</span> : null}
           </div>
 
           <form className="profile-form" action={updateProfile}>
@@ -81,11 +94,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             <div className="field-row">
               <label>
                 <span>First name</span>
-                <input name="first_name" defaultValue={profile?.first_name ?? ""} maxLength={80} autoComplete="given-name" required />
+                <input name="first_name" defaultValue={profile?.first_name || googleName.first} maxLength={80} autoComplete="given-name" required />
               </label>
               <label>
                 <span>Last name</span>
-                <input name="last_name" defaultValue={profile?.last_name ?? ""} maxLength={80} autoComplete="family-name" required />
+                <input name="last_name" defaultValue={profile?.last_name || googleName.last} maxLength={80} autoComplete="family-name" required />
               </label>
             </div>
 
@@ -98,7 +111,21 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             <button className="primary-button" type="submit">Save profile</button>
           </form>
         </section>
+
+        {!incomplete ? <section className="profile-stats" aria-labelledby="stats-heading">
+          <h2 className="sr-only" id="stats-heading">Your stats</h2>
+          <dl className="stat-strip">
+            <div><dt>Votes cast</dt><dd>{votesCast}</dd></div>
+            <div><dt>Laugh rate</dt><dd>{laughRate}%</dd></div>
+            <div><dt>Captions generated</dt><dd>{generations.count ?? 0}</dd></div>
+          </dl>
+          <div className="hero-actions">
+            <Link className="primary-button" href="/vote?view=judge">Judge captions →</Link>
+            <Link className="outline-link" href="/create">Create a caption</Link>
+          </div>
+        </section> : null}
       </main>
+      <SiteFooter />
     </div>
   );
 }

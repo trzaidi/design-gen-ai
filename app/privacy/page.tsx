@@ -1,10 +1,16 @@
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { createClient } from "@/lib/supabase/server";
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  const signedIn = Boolean(claims?.sub) && !claims?.is_anonymous;
   return (
     <div className="page">
-      <SiteHeader signedIn={false} />
-      <main className="centered-page">
+      <SiteHeader signedIn={signedIn} email={typeof claims?.email === "string" ? claims.email : undefined} />
+      <main className="centered-page" id="main">
         <section className="auth-panel" aria-labelledby="privacy-title">
           <p className="eyebrow">Privacy</p>
           <h1 className="interior-title" id="privacy-title">
@@ -41,6 +47,7 @@ export default function PrivacyPage() {
           </p>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }

@@ -79,5 +79,5 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture?.path ?? null, prompt, model, tone, generation_id: request.id }).select("id").single();
   if (error || !data) return { error: "The caption was generated but could not be saved. Please try again." };
   revalidatePath("/"); revalidatePath("/vote"); revalidatePath("/create");
-  return { success: "Caption published to the arena.", captionId: data.id };
+  return { success: "Caption published to the arena.", captionId: data.id, caption, imagePath: picture?.path ?? null, tone };
 }

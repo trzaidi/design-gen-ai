@@ -18,4 +18,4 @@ export type Caption = {
 };
 
 export type CaptionStats = { caption_id: number; upvotes: number; downvotes: number; score: number };
-export type ActionResult = { error?: string; success?: string; captionId?: number };
+export type ActionResult = { error?: string; success?: string; captionId?: number; caption?: string; imagePath?: string | null; tone?: string };
