@@ -24,3 +24,15 @@ than once?", using a self-audit of the Week 4 build.
 | No loading or error states. | Skeleton loading UI, branded 404 and error pages. | Build output lists the routes. |
 | Archive couldn't be filtered. | Tone filter chips and Newest/Top sort on the home page. | Rendered with sample data. |
 | Content felt generic; nothing tied it to Columbia (owner suggestion). | Seven freely licensed Wikimedia Commons photos of real campus spots (Butler/South Lawn, Low, Alma Mater, 116th St, John Jay, Lerner, College Walk) with scenes built on campus lore: CUIT training emails after the 2025 breach, Public Safety alerts, the 1 train, the housing lottery, the swim test. Daily scenes and the AI prompt now target Columbia students. Every card credits its photo, and a /credits page lists the licenses. | Picker, cards, and credits verified in the browser. Requires migration `20261019120000_allow_columbia_meme_images.sql`. |
+
+
+## October 25 owner feedback
+
+The owner found that generated captions were missing pictures and asked to attach suitable pictures or remove those records, then expand Columbia material using real campus events.
+
+- Attached matching existing assets to all ten pictureless captions; retained all 17 captions and 18 votes. The scoped repair is recorded in `2026-10-25-caption-pictures.sql`.
+- Added 15 image-backed, sourced topic presets and a public `/material` page. Topics include the October 23 CUIT settlement update, emailed security lessons, September campus-access rules, meal-plan mechanics, Butler, housing and registration.
+- The generator now starts with a topic and picture, supports custom setups with a chosen picture, and rejects missing or unknown images before using an AI attempt.
+- Admin media forms now use a required gallery selector and show previews.
+- Build, lint and seven tests passed, including image availability, topical input integrity, picture validation and New York daily rotation.
+- Source dates are shown in the interface; examples and scenarios are labeled as jokes. No specific unverified PM request is claimed.

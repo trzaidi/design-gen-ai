@@ -7,6 +7,7 @@ export function SiteFooter() {
       <Link href="/">Archive</Link>
       <Link href="/vote">Judge</Link>
       <Link href="/create">Create</Link>
+      <Link href="/material">Columbia material</Link>
       <Link href="/credits">Credits</Link>
       <Link href="/privacy">Privacy</Link>
     </nav>

@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
@@ -26,27 +25,7 @@ async function getVerifiedUser() {
 }
 
 export async function signInWithGoogle() {
-  const supabase = await createClient();
-  const headerStore = await headers();
-  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
-  const protocol = headerStore.get("x-forwarded-proto") ?? "http";
-
-  if (!host) {
-    redirect("/login?error=missing-host");
-  }
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: `${protocol}://${host}/auth/callback`,
-    },
-  });
-
-  if (error || !data.url) {
-    redirect("/login?error=oauth");
-  }
-
-  redirect(data.url);
+  redirect("https://design-gen-ai-phi.vercel.app/auth/login");
 }
 
 export async function signOut() {

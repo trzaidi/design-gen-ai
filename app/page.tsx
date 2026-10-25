@@ -27,9 +27,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ t
   const ownVotes = new Map((votes?.data ?? []).map((row) => [row.caption_id, row.value]));
   const unratedCount = signedIn ? captions.filter((caption) => !ownVotes.has(caption.id)).length : 0;
   const { leaders, weekly } = weeklyLeaders(captions, stats);
-  const { scene } = dailyScene();
+  const { scene,topic } = dailyScene();
   const totalVotes = [...stats.values()].reduce((sum, row) => sum + row.upvotes + row.downvotes, 0);
-  const createHref = signedIn ? "/create" : "/login";
+  const createHref = signedIn ? `/create?topic=${topic.id}` : "/login";
 
   const { tone, sort } = await searchParams;
   const activeTone = TONES.find((option) => option === tone);
@@ -80,7 +80,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ t
       <section className="how-it-works" aria-labelledby="how-heading">
         <h2 className="sr-only" id="how-heading">How it works</h2>
         <ol>
-          <li><span className="step-number">01</span><strong>Pick a scene</strong><span>Choose a picture or describe a moment from campus or the city.</span></li>
+          <li><span className="step-number">01</span><strong>Pick a scene</strong><span>Start with a campus story and its matching picture.</span></li>
           <li><span className="step-number">02</span><strong>AI writes it</strong><span>Pick Deadpan, Unhinged, or Wholesome and Gemini writes the caption.</span></li>
           <li><span className="step-number">03</span><strong>The crowd decides</strong><span>Everyone votes Funny or Missed. The best captions climb the board.</span></li>
         </ol>
@@ -88,7 +88,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ t
 
       <section className="daily-scene" aria-labelledby="daily-heading">
         <div><p className="eyebrow">A new scene every day</p><h2 id="daily-heading">Today’s material</h2></div>
-        <div className="daily-body"><p>{scene}</p><Link className="primary-button" href={createHref}>Caption this →</Link></div>
+        <div className="daily-body"><div><p>{scene}</p><Link className="text-button" href="/material">Browse campus news & joke setups →</Link></div><Link className="primary-button" href={createHref}>Caption this →</Link></div>
       </section>
 
       {leaders.length ? <section className="leaderboard" aria-labelledby="leaders-heading">

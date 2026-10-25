@@ -3,9 +3,9 @@
 import { generateText } from "ai";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { buildPrompt, TONES, type Tone } from "@/lib/arena";
+import { buildPrompt } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
-import { findMemeImage } from "@/lib/meme-images";
+import { resolveCaptionInput } from "@/lib/caption-input";
 import { hasAiAuthentication } from "@/lib/ai-auth";
 import { captionModel } from "@/lib/ai-provider";
 
@@ -42,16 +42,13 @@ export async function rateCaption(captionId: number, value: number): Promise<Act
 export async function generateCaption(_previous: ActionResult, formData: FormData): Promise<ActionResult> {
   const member = await arenaUser();
   if (!member) return { error: "Sign in and complete your profile to generate captions." };
-  const imagePath = String(formData.get("image_path") ?? "");
-  const picture = findMemeImage(imagePath);
-  if (imagePath && !picture) return { error: "Choose a picture from the gallery." };
-  const scene = picture?.description ?? String(formData.get("scene") ?? "").trim();
-  const tone = String(formData.get("tone") ?? "");
-  if (scene.length < 10 || scene.length > 600 || !TONES.includes(tone as Tone)) return { error: "Describe a scene in 10–600 characters and choose a tone." };
+  const resolved=resolveCaptionInput({imagePath:String(formData.get("image_path")??""),topicId:String(formData.get("topic_id")??""),scene:String(formData.get("scene")??""),tone:String(formData.get("tone")??"")});
+  if("error" in resolved)return {error:resolved.error};
+  const {picture,topic,scene,tone}=resolved;
   if (!hasAiAuthentication()) return { error: "AI generation is not connected yet. Please contact the site owner." };
   const configuredModel = captionModel();
   const model = configuredModel.storedModel;
-  const prompt = buildPrompt(scene, tone as Tone);
+  const prompt = buildPrompt(scene, tone, topic);
   const { supabase } = member;
   // The DB serializes reservations and enforces each account's trusted allowance.
   const { data: request, error: reservationError } = await supabase.from("generation_requests")
@@ -76,10 +73,10 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
     if (status === 429) return { error: "The AI provider is busy. Please try again later. This attempt counts toward your daily limit." };
     return { error: "The AI provider is unavailable or its allowance is exhausted. Try again later. This attempt counts toward your daily limit." };
   }
-  const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture?.path ?? null, prompt, model, tone, generation_id: request.id }).select("id").single();
+  const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture.path, prompt, model, tone, generation_id: request.id }).select("id").single();
   // 23514: the database has not been migrated to accept this picture yet.
-  if (error?.code === "23514") return { error: "This picture isn’t enabled in the archive yet. Pick a different picture or write your own scene." };
+  if (error?.code === "23514") return { error: "This picture isn’t enabled in the archive yet. Pick a different picture." };
   if (error || !data) return { error: "The caption was generated but could not be saved. Please try again." };
   revalidatePath("/"); revalidatePath("/vote"); revalidatePath("/create");
-  return { success: "Caption published to the arena.", captionId: data.id, caption, imagePath: picture?.path ?? null, tone };
+  return { success: "Caption published to the arena.", captionId: data.id, caption, imagePath: picture.path, tone };
 }
