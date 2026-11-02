@@ -36,3 +36,13 @@ The owner found that generated captions were missing pictures and asked to attac
 - Admin media forms now use a required gallery selector and show previews.
 - Build, lint and seven tests passed, including image availability, topical input integrity, picture validation and New York daily rotation.
 - Source dates are shown in the interface; examples and scenarios are labeled as jokes. No specific unverified PM request is claimed.
+
+## Week 7 iteration (November 1, 2026)
+
+No PM or group feedback was received for Week 6. The owner asked that profile photo uploads work and that any limit explain itself.
+
+- A self-audit found that profile photos over 1 MB always failed, because server actions default to a 1 MB request body. The limit is now 4.4 MB, under Vercel's 4.5 MB cap, and photos up to 4 MB are accepted.
+- Type and size are checked when a photo is chosen, before any upload. The message gives the file's size, the 4 MB limit and the reason for it. The server repeats both checks with the same wording, and the form shows a preview.
+- Every caption model call is logged for the admin panel's observability pages: status, response, finish reason, tokens, latency and provider error code. Logging never blocks a member's generation.
+- Verified with a browser test against a mock backend: a 5 MB photo is refused with the explanation, and a 3 MB photo uploads and saves.
+
