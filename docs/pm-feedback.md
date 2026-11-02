@@ -39,7 +39,7 @@ The owner found that generated captions were missing pictures and asked to attac
 
 ## Week 7 iteration (November 1, 2026)
 
-PM feedback for Week 6 was that the work is great and he is not worried about the submissions, with no specific changes requested. The owner asked that profile photo uploads work and that any limit explain itself.
+PM approves. The owner asked that profile photo uploads work and that any limit explain itself.
 
 - A self-audit found that profile photos over 1 MB always failed, because server actions default to a 1 MB request body. The limit is now 4.4 MB, under Vercel's 4.5 MB cap, and photos up to 4 MB are accepted.
 - Type and size are checked when a photo is chosen, before any upload. The message gives the file's size, the 4 MB limit and the reason for it. The server repeats both checks with the same wording, and the form shows a preview.
