@@ -39,6 +39,14 @@ export async function rateCaption(captionId: number, value: number): Promise<Act
   return { success: value === 0 ? "Vote removed." : "Vote saved." };
 }
 
+type ResponseLog = { status: "success" | "rejected" | "error"; caption_id?: number; response_text?: string; finish_reason?: string; input_tokens?: number; output_tokens?: number; latency_ms: number; error_status?: number };
+
+// Observability for the admin panel. Logging must never block or fail a member's generation.
+async function logResponse(supabase: Awaited<ReturnType<typeof createClient>>, requestId: string, model: string, tone: string, entry: ResponseLog) {
+  const { error } = await supabase.from("llm_responses").insert({ generation_request_id: requestId, model, tone, ...entry, response_text: entry.response_text?.slice(0, 4000) });
+  if (error) console.error("LLM response log failed", { code: error.code });
+}
+
 export async function generateCaption(_previous: ActionResult, formData: FormData): Promise<ActionResult> {
   const member = await arenaUser();
   if (!member) return { error: "Sign in and complete your profile to generate captions." };
@@ -59,15 +67,22 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
     ? "You have used your 10 generation attempts for the last 24 hours. You can generate again as those attempts expire."
     : "Generation could not be started. Please try again." };
   let caption: string;
+  let usage: Pick<ResponseLog, "finish_reason" | "input_tokens" | "output_tokens" | "latency_ms">;
+  const started = Date.now();
   try {
     const result = await generateText({ model: configuredModel.model, prompt, reasoning: "low", maxOutputTokens: 512, maxRetries: 0, timeout: 25_000 });
     caption = result.text.trim().replace(/^["“]|["”]$/g, "");
-    if (!caption || caption.length > 500 || result.finishReason === "length") return { error: "The AI did not return a usable caption. Try a different scene." };
+    usage = { finish_reason: result.finishReason, input_tokens: result.usage.inputTokens, output_tokens: result.usage.outputTokens, latency_ms: Date.now() - started };
+    if (!caption || caption.length > 500 || result.finishReason === "length") {
+      await logResponse(supabase, request.id, model, tone, { status: "rejected", response_text: result.text, ...usage });
+      return { error: "The AI did not return a usable caption. Try a different scene." };
+    }
   } catch (error) {
     // Provider errors can contain request details; never return them to the client.
     const status = typeof error === "object" && error !== null && "statusCode" in error && typeof error.statusCode === "number"
       ? error.statusCode : null;
     console.error("Caption generation failed", { status });
+    await logResponse(supabase, request.id, model, tone, { status: "error", latency_ms: Date.now() - started, error_status: status !== null && status >= 100 && status <= 599 ? status : undefined });
     if (status === 401) return { error: "The AI connection could not authenticate. Please contact the site owner. This attempt counts toward your daily limit." };
     if (status === 402 || status === 403) return { error: "AI generation is not available for this site yet. The site owner needs to check the provider access and allowance. This attempt counts toward your daily limit." };
     if (status === 429) return { error: "The AI provider is busy. Please try again later. This attempt counts toward your daily limit." };
@@ -76,6 +91,7 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   const { data, error } = await supabase.from("captions").insert({ caption_text: caption, image_description: scene, image_path: picture.path, prompt, model, tone, generation_id: request.id }).select("id").single();
   // 23514: the database has not been migrated to accept this picture yet.
   if (error?.code === "23514") return { error: "This picture isn’t enabled in the archive yet. Pick a different picture." };
+  await logResponse(supabase, request.id, model, tone, { status: error || !data ? "rejected" : "success", caption_id: data?.id, response_text: caption, ...usage });
   if (error || !data) return { error: "The caption was generated but could not be saved. Please try again." };
   revalidatePath("/"); revalidatePath("/vote"); revalidatePath("/create");
   return { success: "Caption published to the arena.", captionId: data.id, caption, imagePath: picture.path, tone };
