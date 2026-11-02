@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import { nameFromMetadata } from "@/lib/google-name";
+import { AvatarInput } from "@/components/avatar-input";
 
 type ProfilePageProps = {
   searchParams: Promise<{ error?: string; saved?: string }>;
@@ -14,8 +15,10 @@ type ProfilePageProps = {
 
 const errorMessages: Record<string, string> = {
   name: "Enter both a first name and a last name.",
-  avatar: "Choose a JPG, PNG, WEBP, or GIF smaller than 5 MB.",
-  upload: "The profile photo could not be uploaded.",
+  "avatar-type": "That file type isn’t supported. Choose a JPG, PNG, WEBP, or GIF image.",
+  "avatar-size": "That photo is larger than 4 MB. Photos must be 4 MB or smaller because our hosting provider limits upload size. Try a smaller or compressed version.",
+  avatar: "Choose a JPG, PNG, WEBP, or GIF image of 4 MB or less.",
+  upload: "The profile photo could not be uploaded. Your name was not changed. Please try again.",
   save: "The profile could not be saved.",
 };
 
@@ -102,11 +105,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               </label>
             </div>
 
-            <label>
-              <span>Profile photo</span>
-              <input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
-              <small>JPG, PNG, WEBP, or GIF · 5 MB maximum</small>
-            </label>
+            <AvatarInput />
 
             <button className="primary-button" type="submit">Save profile</button>
           </form>

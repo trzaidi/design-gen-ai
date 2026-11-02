@@ -4,13 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
-const ALLOWED_AVATAR_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-]);
+import { AVATAR_MAX_BYTES, AVATAR_TYPES } from "@/lib/avatar-rules";
 
 async function getVerifiedUser() {
   const supabase = await createClient();
@@ -47,8 +41,11 @@ export async function updateProfile(formData: FormData) {
   let avatarPath: string | undefined;
 
   if (avatar instanceof File && avatar.size > 0) {
-    if (!ALLOWED_AVATAR_TYPES.has(avatar.type) || avatar.size > MAX_AVATAR_BYTES) {
-      redirect("/profile?error=avatar");
+    if (!AVATAR_TYPES.includes(avatar.type)) {
+      redirect("/profile?error=avatar-type");
+    }
+    if (avatar.size > AVATAR_MAX_BYTES) {
+      redirect("/profile?error=avatar-size");
     }
 
     avatarPath = `${userId}/avatar`;
