@@ -87,16 +87,12 @@ export const COLUMBIA_MATERIAL:MaterialTopic[] = [
     "checked": "2026-11-22",
     "imagePath": "/memes/cu-butler-library.webp",
     "scene": "Finals week in Butler: a student who has never been diagnosed with anything is suddenly color-coding notes at 4 AM on their roommate's Addy.",
-    "fact": "Columbia Housing policy counts prescription drugs used by a person other than the prescribed individual as drugs. Columbia Health says more than 96% of students reported not using unprescribed prescription drugs in the past three months (2023 survey).",
+    "fact": "Columbia Housing policy counts prescription drugs used by a person other than the prescribed individual as drugs.",
     "example": "I don't have ADHD. I have a roommate with ADHD and finals.",
     "sources": [
       {
         "label": "Housing alcohol & drug policy",
         "url": "https://www.housing.columbia.edu/content/alcohol-and-drugs-residence-halls"
-      },
-      {
-        "label": "Columbia Health · Other drugs",
-        "url": "https://health.columbia.edu/content/other-drugs"
       }
     ]
   },
