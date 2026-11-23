@@ -7,7 +7,7 @@ import { TONES, TONE_DETAILS } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
 import { MEME_IMAGES, findMemeImage } from "@/lib/meme-images";
 import { PhotoCredit } from "@/components/photo-credit";
-import { COLUMBIA_MATERIAL, findMaterialTopic, type MaterialTopic } from "@/lib/columbia-material";
+import { COLUMBIA_MATERIAL, MATERIAL_CATEGORIES, findMaterialTopic, type MaterialTopic } from "@/lib/columbia-material";
 
 export function GenerationForm({ initialTopic, used, dailyLimit }: { initialTopic: MaterialTopic; used: number; dailyLimit: number | null }) {
   const [state, action, pending] = useActionState<ActionResult, FormData>(generateCaption, {});
@@ -30,9 +30,9 @@ export function GenerationForm({ initialTopic, used, dailyLimit }: { initialTopi
       <label htmlFor="material-topic">Start with Columbia material</label>
       <select id="material-topic" name="topic_id" value={topicId} disabled={pending} onChange={event=>chooseTopic(event.target.value)}>
         <option value="">My own scene</option>
-        {(["In the news","Campus life"] as const).map(category=><optgroup key={category} label={category}>{COLUMBIA_MATERIAL.filter(item=>item.category===category).map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>)}
+        {MATERIAL_CATEGORIES.map(category=><optgroup key={category} label={category}>{COLUMBIA_MATERIAL.filter(item=>item.category===category).map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>)}
       </select>
-      {topic&&<div className="material-context"><strong>{topic.category} · checked Oct 25, 2026</strong><p>{topic.fact}</p><div>{topic.sources.map(source=><a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a>)}</div></div>}
+      {topic&&<div className="material-context"><strong>{topic.category} · checked {topic.checked==="2026-11-22"?"Nov 22, 2026":"Oct 25, 2026"}</strong><p>{topic.fact}</p><div>{topic.sources.map(source=><a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a>)}</div></div>}
       <Link className="text-button" href="/material">Browse all 15 joke setups →</Link>
       <fieldset className="picture-fieldset" disabled={pending}><legend>Choose a picture</legend>
       <p className="picture-group-label">Around campus</p>

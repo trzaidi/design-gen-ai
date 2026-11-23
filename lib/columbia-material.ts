@@ -1,11 +1,125 @@
-// Curated on October 25, 2026. News is dated; comic setups are imagined.
+// Curated on October 25, 2026 (cheating set added November 22, 2026). News is dated; comic setups are imagined.
 // Source context is supplied to the model so it need not invent campus facts.
+export const MATERIAL_CATEGORIES = ["Cheating at Columbia","In the news","Campus life"] as const;
+export type MaterialCategory = (typeof MATERIAL_CATEGORIES)[number];
 export type MaterialTopic = {
- id:string; title:string; category:"In the news"|"Campus life"; imagePath:string;
+ id:string; title:string; category:MaterialCategory; checked?:string; imagePath:string;
  scene:string; fact:string; example:string; sources:{label:string;url:string}[];
 };
 export const MATERIAL_CHECKED_DATE = "2026-10-25";
 export const COLUMBIA_MATERIAL:MaterialTopic[] = [
+  {
+    "id": "exam-phone",
+    "title": "The 40-minute bathroom break",
+    "category": "Cheating at Columbia",
+    "checked": "2026-11-22",
+    "imagePath": "/memes/cu-exam-room.webp",
+    "scene": "Halfway through a midterm, a student asks for their third bathroom break and walks out with their phone in their hoodie pocket.",
+    "fact": "Columbia CS policy: unless the instructor authorizes it, no external aids or electronic devices are allowed during exams. Columbia's academic violations list counts using unauthorized devices on exams as cheating.",
+    "example": "Nobody pees for 40 minutes. Some people Google for 40 minutes.",
+    "sources": [
+      {
+        "label": "CS academic honesty",
+        "url": "https://www.cs.columbia.edu/academic/academic-honesty"
+      },
+      {
+        "label": "Academic violations",
+        "url": "https://cssi.columbia.edu/content/academic-violations"
+      }
+    ]
+  },
+  {
+    "id": "neighbor-copy",
+    "title": "Peer review, live, during the final",
+    "category": "Cheating at Columbia",
+    "checked": "2026-11-22",
+    "imagePath": "/memes/cu-exam-room.webp",
+    "scene": "In a packed lecture-hall final, a student leans so far toward the next desk that they are basically sitting in their neighbor's lap, and the neighbor tilts their paper to help.",
+    "fact": "Columbia CS lists planning or executing a cooperative subterfuge during an exam as severe academic dishonesty; Columbia's violations list includes unauthorized assistance and unauthorized collaboration on tests.",
+    "example": "We didn't cheat. We collaborated with eye contact.",
+    "sources": [
+      {
+        "label": "CS academic honesty",
+        "url": "https://www.cs.columbia.edu/academic/academic-honesty"
+      },
+      {
+        "label": "Academic violations",
+        "url": "https://cssi.columbia.edu/content/academic-violations"
+      }
+    ]
+  },
+  {
+    "id": "old-exam-chat",
+    "title": "The group chat has the exam",
+    "category": "Cheating at Columbia",
+    "checked": "2026-11-22",
+    "imagePath": "/memes/cu-exam-room.webp",
+    "scene": "The night before the midterm, a group chat fills with blurry screenshots of last year's exam that someone's roommate's friend's TA 'accidentally' left open.",
+    "fact": "Columbia's academic violations list includes giving or taking course materials, such as exams, without the instructor's permission, including photos, screenshots and uploads.",
+    "example": "Studying is hard. Being in the right group chat is a skill.",
+    "sources": [
+      {
+        "label": "Academic violations",
+        "url": "https://cssi.columbia.edu/content/academic-violations"
+      }
+    ]
+  },
+  {
+    "id": "ai-essay",
+    "title": "As an AI language model, I loved the Iliad",
+    "category": "Cheating at Columbia",
+    "checked": "2026-11-22",
+    "imagePath": "/memes/cu-butler-library.webp",
+    "scene": "At 3 AM in Butler, a student pastes their Lit Hum essay prompt into a chatbot and submits the answer without reading it.",
+    "fact": "Columbia's generative AI policy says unauthorized use of AI is treated similarly to unauthorized assistance and/or plagiarism, and tells students to ask instructors how AI may be used.",
+    "example": "My essay on the Odyssey was written by something that has never left the house either.",
+    "sources": [
+      {
+        "label": "Columbia generative AI policy",
+        "url": "https://provost.columbia.edu/content/office-senior-vice-provost/ai-policy"
+      }
+    ]
+  },
+  {
+    "id": "borrowed-adderall",
+    "title": "Roommate's prescription, shared custody",
+    "category": "Cheating at Columbia",
+    "checked": "2026-11-22",
+    "imagePath": "/memes/cu-butler-library.webp",
+    "scene": "Finals week in Butler: a student who has never been diagnosed with anything is suddenly color-coding notes at 4 AM on their roommate's Adderall.",
+    "fact": "Columbia Housing policy counts prescription drugs used by a person other than the prescribed individual as drugs. Columbia Health says more than 96% of students reported not using unprescribed prescription drugs in the past three months (2023 survey).",
+    "example": "I don't have ADHD. I have a roommate with ADHD and finals.",
+    "sources": [
+      {
+        "label": "Housing alcohol & drug policy",
+        "url": "https://www.housing.columbia.edu/content/alcohol-and-drugs-residence-halls"
+      },
+      {
+        "label": "Columbia Health · Other drugs",
+        "url": "https://health.columbia.edu/content/other-drugs"
+      }
+    ]
+  },
+  {
+    "id": "floor-pharmacist",
+    "title": "The John Jay pharmacist",
+    "category": "Cheating at Columbia",
+    "checked": "2026-11-22",
+    "imagePath": "/memes/cu-john-jay.webp",
+    "scene": "During finals, one student on a John Jay floor quietly runs a 'study supplement' business, with Venmo requests labeled 'tutoring' and 'pizza'.",
+    "fact": "Columbia's policy prohibits the possession, use, manufacture or distribution of illicit drugs on University premises; Housing says selling or sharing prescription drugs means students should expect a lengthy separation or expulsion.",
+    "example": "Best tutor on the floor. Never once explained a concept.",
+    "sources": [
+      {
+        "label": "University policy on alcohol & drugs",
+        "url": "https://universitypolicies.columbia.edu/node/546"
+      },
+      {
+        "label": "Housing alcohol & drug policy",
+        "url": "https://www.housing.columbia.edu/content/alcohol-and-drugs-residence-halls"
+      }
+    ]
+  },
   {
     "id": "cyber-training",
     "title": "Your training is overdue. Their breach is not.",

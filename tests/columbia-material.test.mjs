@@ -29,9 +29,9 @@ test('custom setups keep their chosen picture, with no accidental news context',
  const input=resolveCaptionInput({imagePath:'/memes/police-goose.webp',topicId:'',scene:'A goose demands everyone complete another training module.',tone:'Unhinged'});
  assert.ok(!('error' in input));assert.equal(input.picture.path,'/memes/police-goose.webp');assert.equal(input.topic,undefined);
 });
-test('daily material changes at New York midnight and visits all fifteen topics',()=>{
+test('daily material changes at New York midnight and visits every topic',()=>{
  assert.equal(dailyMaterial(new Date('2026-10-25T03:59:00Z')).day,'2026-10-24');
  assert.equal(dailyMaterial(new Date('2026-10-25T04:00:00Z')).day,'2026-10-25');
- const ids=new Set(Array.from({length:15},(_,i)=>dailyMaterial(new Date(Date.UTC(2026,9,25+i,12))).topic.id));
+ const ids=new Set(Array.from({length:COLUMBIA_MATERIAL.length},(_,i)=>dailyMaterial(new Date(Date.UTC(2026,9,25+i,12))).topic.id));
  assert.equal(ids.size,COLUMBIA_MATERIAL.length);
 });
