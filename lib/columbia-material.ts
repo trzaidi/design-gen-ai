@@ -81,12 +81,12 @@ export const COLUMBIA_MATERIAL:MaterialTopic[] = [
     ]
   },
   {
-    "id": "borrowed-adderall",
+    "id": "borrowed-addy",
     "title": "Roommate's prescription, shared custody",
     "category": "Cheating at Columbia",
     "checked": "2026-11-22",
     "imagePath": "/memes/cu-butler-library.webp",
-    "scene": "Finals week in Butler: a student who has never been diagnosed with anything is suddenly color-coding notes at 4 AM on their roommate's Adderall.",
+    "scene": "Finals week in Butler: a student who has never been diagnosed with anything is suddenly color-coding notes at 4 AM on their roommate's Addy.",
     "fact": "Columbia Housing policy counts prescription drugs used by a person other than the prescribed individual as drugs. Columbia Health says more than 96% of students reported not using unprescribed prescription drugs in the past three months (2023 survey).",
     "example": "I don't have ADHD. I have a roommate with ADHD and finals.",
     "sources": [
@@ -106,7 +106,7 @@ export const COLUMBIA_MATERIAL:MaterialTopic[] = [
     "category": "Cheating at Columbia",
     "checked": "2026-11-22",
     "imagePath": "/memes/cu-john-jay.webp",
-    "scene": "During finals, one student on a John Jay floor quietly runs a 'study supplement' business, with Venmo requests labeled 'tutoring' and 'pizza'.",
+    "scene": "During finals, one student on a John Jay floor quietly sells addies, with Venmo requests labeled 'tutoring' and 'pizza'.",
     "fact": "Columbia's policy prohibits the possession, use, manufacture or distribution of illicit drugs on University premises; Housing says selling or sharing prescription drugs means students should expect a lengthy separation or expulsion.",
     "example": "Best tutor on the floor. Never once explained a concept.",
     "sources": [
