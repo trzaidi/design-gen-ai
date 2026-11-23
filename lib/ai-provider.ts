@@ -11,3 +11,16 @@ export function captionModel(env = process.env) {
   const modelId = env.AI_GATEWAY_MODEL ?? "google/gemini-3.5-flash-lite";
   return { provider: "gateway" as const, model: modelId, storedModel: modelId };
 }
+
+// Satire about cheating, AI essays and borrowed prescriptions trips Gemini's
+// default filters. Comedy captions only need high-severity content blocked.
+export const CAPTION_PROVIDER_OPTIONS = {
+  google: {
+    safetySettings: [
+      "HARM_CATEGORY_DANGEROUS_CONTENT",
+      "HARM_CATEGORY_HARASSMENT",
+      "HARM_CATEGORY_HATE_SPEECH",
+      "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    ].map((category) => ({ category, threshold: "BLOCK_ONLY_HIGH" })),
+  },
+};

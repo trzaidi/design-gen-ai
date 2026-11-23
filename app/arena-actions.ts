@@ -7,7 +7,7 @@ import { buildPrompt } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
 import { resolveCaptionInput } from "@/lib/caption-input";
 import { hasAiAuthentication } from "@/lib/ai-auth";
-import { captionModel } from "@/lib/ai-provider";
+import { CAPTION_PROVIDER_OPTIONS, captionModel } from "@/lib/ai-provider";
 
 async function arenaUser() {
   const supabase = await createClient();
@@ -70,7 +70,7 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   let usage: Pick<ResponseLog, "finish_reason" | "input_tokens" | "output_tokens" | "latency_ms">;
   const started = Date.now();
   try {
-    const result = await generateText({ model: configuredModel.model, prompt, reasoning: "low", maxOutputTokens: 512, maxRetries: 0, timeout: 25_000 });
+    const result = await generateText({ model: configuredModel.model, prompt, providerOptions: CAPTION_PROVIDER_OPTIONS, reasoning: "low", maxOutputTokens: 512, maxRetries: 0, timeout: 25_000 });
     caption = result.text.trim().replace(/^["“]|["”]$/g, "");
     usage = { finish_reason: result.finishReason, input_tokens: result.usage.inputTokens, output_tokens: result.usage.outputTokens, latency_ms: Date.now() - started };
     if (!caption || caption.length > 500 || result.finishReason === "length") {

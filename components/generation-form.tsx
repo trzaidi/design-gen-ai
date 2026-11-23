@@ -33,7 +33,7 @@ export function GenerationForm({ initialTopic, used, dailyLimit }: { initialTopi
         {MATERIAL_CATEGORIES.map(category=><optgroup key={category} label={category}>{COLUMBIA_MATERIAL.filter(item=>item.category===category).map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>)}
       </select>
       {topic&&<div className="material-context"><strong>{topic.category} · checked {topic.checked==="2026-11-22"?"Nov 22, 2026":"Oct 25, 2026"}</strong><p>{topic.fact}</p><div>{topic.sources.map(source=><a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a>)}</div></div>}
-      <Link className="text-button" href="/material">Browse all 15 joke setups →</Link>
+      <Link className="text-button" href="/material">Browse all {COLUMBIA_MATERIAL.length} joke setups →</Link>
       <fieldset className="picture-fieldset" disabled={pending}><legend>Choose a picture</legend>
       <p className="picture-group-label">Around campus</p>
       <div className="picture-options">
