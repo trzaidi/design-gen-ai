@@ -35,3 +35,9 @@ test('daily material changes at New York midnight and visits every topic',()=>{
  const ids=new Set(Array.from({length:COLUMBIA_MATERIAL.length},(_,i)=>dailyMaterial(new Date(Date.UTC(2026,9,25+i,12))).topic.id));
  assert.equal(ids.size,COLUMBIA_MATERIAL.length);
 });
+test('captions always say Addy / addies',async()=>{
+ const {applyHouseSlang}=await import('../lib/arena.ts');
+ assert.equal(applyHouseSlang("my roommate's Adderall"),"my roommate's Addy");
+ assert.equal(applyHouseSlang('selling adderalls in John Jay'),'selling addies in John Jay');
+ assert.equal(applyHouseSlang("YOUR ROOMMATE'S ADDERALL"),"YOUR ROOMMATE'S ADDY");
+});

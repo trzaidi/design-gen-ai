@@ -3,7 +3,7 @@
 import { generateText } from "ai";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { buildPrompt } from "@/lib/arena";
+import { applyHouseSlang, buildPrompt } from "@/lib/arena";
 import type { ActionResult } from "@/lib/types";
 import { resolveCaptionInput } from "@/lib/caption-input";
 import { hasAiAuthentication } from "@/lib/ai-auth";
@@ -71,7 +71,7 @@ export async function generateCaption(_previous: ActionResult, formData: FormDat
   const started = Date.now();
   try {
     const result = await generateText({ model: configuredModel.model, prompt, providerOptions: CAPTION_PROVIDER_OPTIONS, reasoning: "low", maxOutputTokens: 2048, maxRetries: 0, timeout: 25_000 });
-    caption = result.text.trim().replace(/^["“]|["”]$/g, "");
+    caption = applyHouseSlang(result.text.trim().replace(/^["“]|["”]$/g, ""));
     usage = { finish_reason: result.finishReason, input_tokens: result.usage.inputTokens, output_tokens: result.usage.outputTokens, latency_ms: Date.now() - started };
     if (!caption || caption.length > 500 || result.finishReason === "length") {
       await logResponse(supabase, request.id, model, tone, { status: "rejected", response_text: result.text, ...usage });
